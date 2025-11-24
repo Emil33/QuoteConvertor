@@ -1,0 +1,33 @@
+<mvc:View
+    controllerName="quoteconvertor.quoteconvertor.controller.master"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    displayBlock="true">
+    <Page
+        id="masterPage"
+        title="Products"
+        showNavButton="false">
+        <content>
+            <List
+                id="masterList"
+                items="{/Products}"
+                mode="SingleSelectMaster"
+                selectionChange=".onSelectionChange">
+                <items>
+                    <ObjectListItem
+                        type="Active"
+                        press=".onSelectionChange"
+                        title="{Name}"
+                        number="{Price}"
+                        numberUnit="{Currency}">
+                        <firstStatus>
+                            <ObjectStatus
+                                text="{Category}"
+                                state="Success"/>
+                        </firstStatus>
+                    </ObjectListItem>
+                </items>
+            </List>
+        </content>
+    </Page>
+</mvc:View>

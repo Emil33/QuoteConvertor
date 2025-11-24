@@ -1,0 +1,92 @@
+<mvc:View
+    controllerName="quoteconvertor.quoteconvertor.controller.detail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    displayBlock="true">
+    <Page
+        id="detailPage"
+        title="{Name}"
+        showNavButton="true"
+        navButtonPress=".onNavBack">
+        <content>
+            <ObjectHeader
+                id="objectHeader"
+                title="{Name}"
+                number="{Price}"
+                numberUnit="{Currency}">
+                <attributes>
+                    <ObjectAttribute
+                        title="Category"
+                        text="{Category}"/>
+                    <ObjectAttribute
+                        title="Supplier"
+                        text="{Supplier}"/>
+                </attributes>
+                <statuses>
+                    <ObjectStatus
+                        text="{Status}"
+                        state="{
+                            path: 'Status',
+                            formatter: '.formatStatus'
+                        }"/>
+                </statuses>
+            </ObjectHeader>
+            
+            <IconTabBar
+                id="iconTabBar"
+                class="sapUiResponsiveContentPadding">
+                <items>
+                    <IconTabFilter
+                        text="General Information"
+                        key="info">
+                        <f:SimpleForm
+                            id="simpleForm"
+                            editable="false"
+                            layout="ResponsiveGridLayout">
+                            <f:content>
+                                <Label text="Product ID"/>
+                                <Text text="{ProductID}"/>
+                                
+                                <Label text="Name"/>
+                                <Text text="{Name}"/>
+                                
+                                <Label text="Category"/>
+                                <Text text="{Category}"/>
+                                
+                                <Label text="Price"/>
+                                <Text text="{Price} {Currency}"/>
+                                
+                                <Label text="Supplier"/>
+                                <Text text="{Supplier}"/>
+                                
+                                <Label text="Description"/>
+                                <Text text="{Description}"/>
+                            </f:content>
+                        </f:SimpleForm>
+                    </IconTabFilter>
+                    
+                    <IconTabFilter
+                        text="Stock Information"
+                        key="stock">
+                        <f:SimpleForm
+                            id="stockForm"
+                            editable="false"
+                            layout="ResponsiveGridLayout">
+                            <f:content>
+                                <Label text="Units in Stock"/>
+                                <Text text="{UnitsInStock}"/>
+                                
+                                <Label text="Units on Order"/>
+                                <Text text="{UnitsOnOrder}"/>
+                                
+                                <Label text="Reorder Level"/>
+                                <Text text="{ReorderLevel}"/>
+                            </f:content>
+                        </f:SimpleForm>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+    </Page>
+</mvc:View>
