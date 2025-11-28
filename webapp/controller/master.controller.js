@@ -1,109 +1,53 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
-    "sap/ui/model/json/JSONModel"
-], function (Controller, JSONModel) {
+    "sap/ui/model/json/JSONModel",
+    "sap/ui/core/format/NumberFormat",
+    "sap/ui/core/format/DateFormat"
+], function (Controller, JSONModel, NumberFormat, DateFormat) {
     "use strict";
 
-    return Controller.extend("quoteconvertor.quoteconvertor.controller.master", {
+    return Controller.extend("quoteconvertor.quoteconvertor.controller.Master", {
 
         onInit: function () {
-            // Create sample data
-            var oData = {
-                Products: [
-                    {
-                        ProductID: "P001",
-                        Name: "Laptop Pro 15",
-                        Category: "Electronics",
-                        Price: 1299.99,
-                        Currency: "USD",
-                        Supplier: "Tech Corp",
-                        Status: "Available",
-                        Description: "High-performance laptop with 15-inch display, perfect for professionals.",
-                        UnitsInStock: 45,
-                        UnitsOnOrder: 20,
-                        ReorderLevel: 10
-                    },
-                    {
-                        ProductID: "P002",
-                        Name: "Wireless Mouse",
-                        Category: "Accessories",
-                        Price: 29.99,
-                        Currency: "USD",
-                        Supplier: "Peripheral Inc",
-                        Status: "Available",
-                        Description: "Ergonomic wireless mouse with precision tracking.",
-                        UnitsInStock: 150,
-                        UnitsOnOrder: 50,
-                        ReorderLevel: 30
-                    },
-                    {
-                        ProductID: "P003",
-                        Name: "Mechanical Keyboard",
-                        Category: "Accessories",
-                        Price: 89.99,
-                        Currency: "USD",
-                        Supplier: "KeyTech Ltd",
-                        Status: "Available",
-                        Description: "Premium mechanical keyboard with RGB lighting.",
-                        UnitsInStock: 80,
-                        UnitsOnOrder: 30,
-                        ReorderLevel: 20
-                    },
-                    {
-                        ProductID: "P004",
-                        Name: "27-inch Monitor",
-                        Category: "Electronics",
-                        Price: 349.99,
-                        Currency: "USD",
-                        Supplier: "Display Solutions",
-                        Status: "Low Stock",
-                        Description: "4K UHD monitor with HDR support and adjustable stand.",
-                        UnitsInStock: 8,
-                        UnitsOnOrder: 25,
-                        ReorderLevel: 10
-                    },
-                    {
-                        ProductID: "P005",
-                        Name: "USB-C Hub",
-                        Category: "Accessories",
-                        Price: 49.99,
-                        Currency: "USD",
-                        Supplier: "Connect Pro",
-                        Status: "Available",
-                        Description: "Multi-port USB-C hub with HDMI, USB 3.0, and SD card reader.",
-                        UnitsInStock: 120,
-                        UnitsOnOrder: 0,
-                        ReorderLevel: 25
-                    },
-                    {
-                        ProductID: "P006",
-                        Name: "Noise-Cancelling Headphones",
-                        Category: "Audio",
-                        Price: 199.99,
-                        Currency: "USD",
-                        Supplier: "Audio Masters",
-                        Status: "Available",
-                        Description: "Premium wireless headphones with active noise cancellation.",
-                        UnitsInStock: 60,
-                        UnitsOnOrder: 40,
-                        ReorderLevel: 15
-                    }
-                ]
-            };
+            // Wait for model to be set by Component
+            var oModel = this.getOwnerComponent().getModel();
+            
+            if (oModel && oModel.getData().Quotes) {
+                this._selectFirstItem();
+            } else {
+                // If model not ready, wait for it
+                this.getOwnerComponent().getModel().attachRequestCompleted(function() {
+                    this._selectFirstItem();
+                }.bind(this));
+            }
+        },
 
-            // Set the model
-            var oModel = new JSONModel(oData);
-            this.getView().setModel(oModel);
-
+        _selectFirstItem: function () {
             // Select the first item by default
             var oList = this.byId("masterList");
-            oList.attachEventOnce("updateFinished", function() {
-                var aItems = oList.getItems();
-                if (aItems.length > 0) {
-                    oList.setSelectedItem(aItems[0]);
-                    this._showDetail(aItems[0]);
-                }
-            }, this);
+            var aItems = oList.getItems();
+            if (aItems.length > 0) {
+                oList.setSelectedItem(aItems[0]);
+                this._showDetail(aItems[0]);
+            }
+        },
+
+        _mergeQuotesWithItems: function (oQuoteModel, oItemsModel) {
+            var aQuotes = oQuoteModel.getData().Quotes || oQuoteModel.getData();
+            var aItems = oItemsModel.getData();
+
+            // Add items array to each quote
+            aQuotes.forEach(function (oQuote) {
+                oQuote.Items = aItems.filter(function (oItem) {
+                    return oItem.QuoteID === oQuote.QuoteID;
+                });
+            });
+
+            oQuoteModel.setData({ Quotes: aQuotes });
+            
+            // Debug: Check if Items were merged correctly
+            console.log("Merged Quotes:", aQuotes);
+            console.log("First quote items:", aQuotes[0] ? aQuotes[0].Items : "No quotes");
         },
 
         onSelectionChange: function (oEvent) {
@@ -115,11 +59,58 @@ sap.ui.define([
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
             var oContext = oItem.getBindingContext();
             var sPath = oContext.getPath();
-            var sProductId = oContext.getProperty("ProductID");
+            var sQuoteId = oContext.getProperty("QuoteID");
             
             oRouter.navTo("detail", {
-                productPath: encodeURIComponent(sPath.substr(1))
+                quotePath: encodeURIComponent(sPath.substr(1))
             });
+        },
+
+        formatCurrency: function (sValue, sCurrency) {
+            if (!sValue) {
+                return "";
+            }
+            var oFormat = NumberFormat.getCurrencyInstance({
+                currencyCode: false
+            });
+            return sCurrency + " " + oFormat.format(sValue);
+        },
+
+        formatDate: function (sDate) {
+            if (!sDate) {
+                return "";
+            }
+            var oDateFormat = DateFormat.getDateInstance({
+                pattern: "dd/MM/yyyy"
+            });
+            
+            // Handle JSON date format /Date(timestamp)/
+            var oDate;
+            if (typeof sDate === "string" && sDate.indexOf("/Date(") === 0) {
+                var timestamp = parseInt(sDate.match(/\d+/)[0]);
+                oDate = new Date(timestamp);
+            } else {
+                oDate = new Date(sDate);
+            }
+            
+            return oDateFormat.format(oDate);
+        },
+
+        formatStatusState: function (sStatus) {
+            switch (sStatus) {
+                case "Approved":
+                    return "Success";
+                case "Pending":
+                    return "Warning";
+                case "Completed":
+                    return "Success";
+                case "Draft":
+                    return "Information";
+                case "Rejected":
+                    return "Error";
+                default:
+                    return "None";
+            }
         }
     });
 });

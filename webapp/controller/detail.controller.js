@@ -1,9 +1,11 @@
 sap.ui.define([
-    "sap/ui/core/mvc/Controller"
-], function (Controller) {
+    "sap/ui/core/mvc/Controller",
+    "sap/ui/core/format/NumberFormat",
+    "sap/ui/core/format/DateFormat"
+], function (Controller, NumberFormat, DateFormat) {
     "use strict";
 
-    return Controller.extend("quoteconvertor.quoteconvertor.controller.detail", {
+    return Controller.extend("quoteconvertor.quoteconvertor.controller.Detail", {
 
         onInit: function () {
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
@@ -11,10 +13,16 @@ sap.ui.define([
         },
 
         _onObjectMatched: function (oEvent) {
-            var sPath = decodeURIComponent(oEvent.getParameter("arguments").productPath);
+            var sPath = decodeURIComponent(oEvent.getParameter("arguments").quotePath);
             this.getView().bindElement({
                 path: "/" + sPath
             });
+            
+            // Debug: Log the quote data to see if Items exist
+            var oModel = this.getView().getModel();
+            var oQuote = oModel.getProperty("/" + sPath);
+            console.log("Quote data:", oQuote);
+            console.log("Items:", oQuote ? oQuote.Items : "No quote data");
         },
 
         onNavBack: function () {
@@ -22,17 +30,79 @@ sap.ui.define([
             oRouter.navTo("master");
         },
 
-        formatStatus: function (sStatus) {
+        formatCurrency: function (sValue, sCurrency) {
+            if (!sValue && sValue !== 0) {
+                return "";
+            }
+            var oFormat = NumberFormat.getCurrencyInstance({
+                currencyCode: false
+            });
+            return sCurrency + " " + oFormat.format(sValue);
+        },
+
+        formatDate: function (sDate) {
+            if (!sDate) {
+                return "N/A";
+            }
+            var oDateFormat = DateFormat.getDateInstance({
+                pattern: "dd/MM/yyyy"
+            });
+            
+            // Handle JSON date format /Date(timestamp)/
+            var oDate;
+            if (typeof sDate === "string" && sDate.indexOf("/Date(") === 0) {
+                var timestamp = parseInt(sDate.match(/\d+/)[0]);
+                oDate = new Date(timestamp);
+            } else {
+                oDate = new Date(sDate);
+            }
+            
+            return oDateFormat.format(oDate);
+        },
+
+        formatStatusState: function (sStatus) {
             switch (sStatus) {
-                case "Available":
+                case "Approved":
                     return "Success";
-                case "Low Stock":
+                case "Pending":
                     return "Warning";
-                case "Out of Stock":
+                case "Completed":
+                    return "Success";
+                case "Draft":
+                    return "Information";
+                case "Rejected":
                     return "Error";
                 default:
                     return "None";
             }
+        },
+
+        formatBoolean: function (bValue) {
+            return bValue ? "Yes" : "No";
+        },
+
+        formatDiscount: function (sPercent, sAmount, sCurrency) {
+            if (!sPercent && !sAmount) {
+                return "No discount";
+            }
+            var oFormat = NumberFormat.getCurrencyInstance({
+                currencyCode: false
+            });
+            return sPercent + "% (" + sCurrency + " " + oFormat.format(sAmount) + ")";
+        },
+
+        formatDimensions: function (sWidth, sHeight, sUnit) {
+            if (!sWidth || !sHeight) {
+                return "";
+            }
+            return sWidth + " x " + sHeight + " " + sUnit;
+        },
+
+        formatSquareMeters: function (sValue) {
+            if (!sValue) {
+                return "";
+            }
+            return sValue + " m²";
         }
     });
 });

@@ -1,34 +1,48 @@
 <mvc:View
-    controllerName="quoteconvertor.quoteconvertor.controller.detail"
+    controllerName="quoteconvertor.quoteconvertor.controller.Detail"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:f="sap.ui.layout.form"
     displayBlock="true">
     <Page
         id="detailPage"
-        title="{Name}"
+        title="{QuoteNumber}"
         showNavButton="true"
         navButtonPress=".onNavBack">
         <content>
             <ObjectHeader
                 id="objectHeader"
-                title="{Name}"
-                number="{Price}"
-                numberUnit="{Currency}">
+                title="{CustomerName}"
+                number="{
+                    parts: ['GrandTotal', 'Currency'],
+                    formatter: '.formatCurrency'
+                }">
                 <attributes>
                     <ObjectAttribute
-                        title="Category"
-                        text="{Category}"/>
+                        title="Quote Number"
+                        text="{QuoteNumber}"/>
                     <ObjectAttribute
-                        title="Supplier"
-                        text="{Supplier}"/>
+                        title="Advisor"
+                        text="{AdvisorName}"/>
+                    <ObjectAttribute
+                        title="Quote Date"
+                        text="{
+                            path: 'QuoteDate',
+                            formatter: '.formatDate'
+                        }"/>
+                    <ObjectAttribute
+                        title="Valid Until"
+                        text="{
+                            path: 'ValidUntil',
+                            formatter: '.formatDate'
+                        }"/>
                 </attributes>
                 <statuses>
                     <ObjectStatus
                         text="{Status}"
                         state="{
                             path: 'Status',
-                            formatter: '.formatStatus'
+                            formatter: '.formatStatusState'
                         }"/>
                 </statuses>
             </ObjectHeader>
@@ -38,52 +52,170 @@
                 class="sapUiResponsiveContentPadding">
                 <items>
                     <IconTabFilter
-                        text="General Information"
-                        key="info">
+                        text="Customer Information"
+                        key="customer">
                         <f:SimpleForm
-                            id="simpleForm"
+                            id="customerForm"
                             editable="false"
-                            layout="ResponsiveGridLayout">
+                            layout="ResponsiveGridLayout"
+                            labelSpanXL="4"
+                            labelSpanL="4"
+                            labelSpanM="4"
+                            labelSpanS="12"
+                            emptySpanXL="0"
+                            emptySpanL="0"
+                            emptySpanM="0"
+                            emptySpanS="0"
+                            columnsXL="2"
+                            columnsL="2"
+                            columnsM="1">
                             <f:content>
-                                <Label text="Product ID"/>
-                                <Text text="{ProductID}"/>
+                                <Label text="Customer Name"/>
+                                <Text text="{CustomerName}"/>
                                 
-                                <Label text="Name"/>
-                                <Text text="{Name}"/>
+                                <Label text="Email"/>
+                                <Text text="{CustomerEmail}"/>
                                 
-                                <Label text="Category"/>
-                                <Text text="{Category}"/>
+                                <Label text="Phone"/>
+                                <Text text="{CustomerPhone}"/>
                                 
-                                <Label text="Price"/>
-                                <Text text="{Price} {Currency}"/>
-                                
-                                <Label text="Supplier"/>
-                                <Text text="{Supplier}"/>
-                                
-                                <Label text="Description"/>
-                                <Text text="{Description}"/>
+                                <Label text="Address"/>
+                                <Text text="{CustomerAddress}"/>
                             </f:content>
                         </f:SimpleForm>
                     </IconTabFilter>
                     
                     <IconTabFilter
-                        text="Stock Information"
-                        key="stock">
+                        text="Quote Details"
+                        key="quote">
                         <f:SimpleForm
-                            id="stockForm"
+                            id="quoteForm"
                             editable="false"
-                            layout="ResponsiveGridLayout">
+                            layout="ResponsiveGridLayout"
+                            labelSpanXL="4"
+                            labelSpanL="4"
+                            labelSpanM="4"
+                            labelSpanS="12"
+                            emptySpanXL="0"
+                            emptySpanL="0"
+                            emptySpanM="0"
+                            emptySpanS="0"
+                            columnsXL="2"
+                            columnsL="2"
+                            columnsM="1">
                             <f:content>
-                                <Label text="Units in Stock"/>
-                                <Text text="{UnitsInStock}"/>
+                                <Label text="Total Price"/>
+                                <Text text="{
+                                    parts: ['TotalPrice', 'Currency'],
+                                    formatter: '.formatCurrency'
+                                }"/>
                                 
-                                <Label text="Units on Order"/>
-                                <Text text="{UnitsOnOrder}"/>
+                                <Label text="Discount"/>
+                                <Text text="{
+                                    parts: ['DiscountPercent', 'DiscountAmount', 'Currency'],
+                                    formatter: '.formatDiscount'
+                                }"/>
                                 
-                                <Label text="Reorder Level"/>
-                                <Text text="{ReorderLevel}"/>
+                                <Label text="Tax Amount"/>
+                                <Text text="{
+                                    parts: ['TaxAmount', 'Currency'],
+                                    formatter: '.formatCurrency'
+                                }"/>
+                                
+                                <Label text="Grand Total"/>
+                                <Text text="{
+                                    parts: ['GrandTotal', 'Currency'],
+                                    formatter: '.formatCurrency'
+                                }"/>
+                                
+                                <Label text="Installation Required"/>
+                                <Text text="{
+                                    path: 'InstallationRequired',
+                                    formatter: '.formatBoolean'
+                                }"/>
+                                
+                                <Label text="Installation Date"/>
+                                <Text text="{
+                                    path: 'InstallationDate',
+                                    formatter: '.formatDate'
+                                }"/>
+                                
+                                <Label text="Installation Cost"/>
+                                <Text text="{
+                                    parts: ['InstallationCost', 'Currency'],
+                                    formatter: '.formatCurrency'
+                                }"/>
+                                
+                                <Label text="Notes"/>
+                                <Text text="{Notes}"/>
                             </f:content>
                         </f:SimpleForm>
+                    </IconTabFilter>
+                    
+                    <IconTabFilter
+                        text="Items"
+                        key="items">
+                        <Table
+                            id="itemsTable"
+                            items="{Items}"
+                            class="sapUiResponsiveMargin"
+                            width="auto">
+                            <columns>
+                                <Column>
+                                    <Text text="Product"/>
+                                </Column>
+                                <Column>
+                                    <Text text="Type"/>
+                                </Column>
+                                <Column>
+                                    <Text text="Colour"/>
+                                </Column>
+                                <Column>
+                                    <Text text="Dimensions"/>
+                                </Column>
+                                <Column>
+                                    <Text text="Qty"/>
+                                </Column>
+                                <Column hAlign="End">
+                                    <Text text="Unit Price"/>
+                                </Column>
+                                <Column hAlign="End">
+                                    <Text text="Total"/>
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <ObjectIdentifier
+                                            title="{ProductName}"
+                                            text="{RoomLocation}"/>
+                                        <Text text="{ProductType}"/>
+                                        <VBox>
+                                            <Text text="{Colour}"/>
+                                            <Text text="{ColourCode}" class="sapUiTinyMarginTop"/>
+                                        </VBox>
+                                        <VBox>
+                                            <Text text="{
+                                                parts: ['Width', 'Height', 'MeasurementUnit'],
+                                                formatter: '.formatDimensions'
+                                            }"/>
+                                            <Text text="{
+                                                parts: ['SquareMeters'],
+                                                formatter: '.formatSquareMeters'
+                                            }" class="sapUiTinyMarginTop"/>
+                                        </VBox>
+                                        <Text text="{Quantity}"/>
+                                        <ObjectNumber
+                                            number="{UnitPrice}"
+                                            unit="{/Currency}"/>
+                                        <ObjectNumber
+                                            number="{TotalPrice}"
+                                            unit="{/Currency}"
+                                            emphasized="true"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
                     </IconTabFilter>
                 </items>
             </IconTabBar>

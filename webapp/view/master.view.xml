@@ -1,30 +1,47 @@
 <mvc:View
-    controllerName="quoteconvertor.quoteconvertor.controller.master"
+    controllerName="quoteconvertor.quoteconvertor.controller.Master"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     displayBlock="true">
     <Page
         id="masterPage"
-        title="Products"
+        title="Quotes"
         showNavButton="false">
         <content>
             <List
                 id="masterList"
-                items="{/Products}"
+                items="{/Quotes}"
                 mode="SingleSelectMaster"
                 selectionChange=".onSelectionChange">
                 <items>
                     <ObjectListItem
                         type="Active"
                         press=".onSelectionChange"
-                        title="{Name}"
-                        number="{Price}"
-                        numberUnit="{Currency}">
+                        title="{CustomerName}"
+                        number="{
+                            parts: ['GrandTotal', 'Currency'],
+                            formatter: '.formatCurrency'
+                        }"
+                        numberUnit="">
+                        <attributes>
+                            <ObjectAttribute text="{QuoteNumber}"/>
+                            <ObjectAttribute text="{AdvisorName}"/>
+                        </attributes>
                         <firstStatus>
                             <ObjectStatus
-                                text="{Category}"
-                                state="Success"/>
+                                text="{Status}"
+                                state="{
+                                    path: 'Status',
+                                    formatter: '.formatStatusState'
+                                }"/>
                         </firstStatus>
+                        <secondStatus>
+                            <ObjectStatus
+                                text="{
+                                    path: 'QuoteDate',
+                                    formatter: '.formatDate'
+                                }"/>
+                        </secondStatus>
                     </ObjectListItem>
                 </items>
             </List>
