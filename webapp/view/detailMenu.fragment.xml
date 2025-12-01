@@ -1,0 +1,29 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <ActionSheet
+        id="detailActionSheet"
+        title="Quote Actions"
+        showCancelButton="true"
+        placement="Bottom">
+        <buttons>
+            <Button
+                text="Create Quote"
+                icon="sap-icon://create-form"
+                press=".onCreateQuote"/>
+            <Button
+                text="Edit Quote"
+                icon="sap-icon://edit"
+                press=".onEditQuote"/>
+            <Button
+                text="Add Discount Quote"
+                icon="sap-icon://waiver"
+                press=".onAddDiscount"/>
+            <Button
+                text="Delete Quote"
+                icon="sap-icon://delete"
+                type="Reject"
+                press=".onDeleteQuote"/>
+        </buttons>
+    </ActionSheet>
+</core:FragmentDefinition>

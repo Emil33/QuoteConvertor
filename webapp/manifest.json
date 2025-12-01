@@ -76,22 +76,24 @@
           {
               "pattern": "",
               "name": "master",
-              "target": "master"
+              "target": ["master", "detail"]
           },
           {
               "pattern": "detail/{quotePath}",
               "name": "detail",
-              "target": "detail"
+              "target": ["master", "detail"]
           }
       ],
       "targets": {
           "master": {
               "viewName": "Master",
-              "viewLevel": 1
+              "viewLevel": 1,
+              "controlAggregation": "masterPages"
           },
           "detail": {
               "viewName": "Detail",
-              "viewLevel": 2
+              "viewLevel": 2,
+              "controlAggregation": "detailPages"
           }
       }
     },

@@ -7,8 +7,14 @@
     <Page
         id="detailPage"
         title="{QuoteNumber}"
-        showNavButton="true"
-        navButtonPress=".onNavBack">
+        showNavButton="false">
+        <headerContent>
+            <Button
+                id="menuButton"
+                icon="sap-icon://menu2"
+                press=".onMenuPress"
+                tooltip="Menu"/>
+        </headerContent>
         <content>
             <ObjectHeader
                 id="objectHeader"

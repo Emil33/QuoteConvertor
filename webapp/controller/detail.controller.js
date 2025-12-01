@@ -25,11 +25,41 @@ sap.ui.define([
             console.log("Items:", oQuote ? oQuote.Items : "No quote data");
         },
 
-        onNavBack: function () {
-            var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-            oRouter.navTo("master");
+        onMenuPress: function (oEvent) {
+            var oButton = oEvent.getSource();
+            
+            // Create action sheet if it doesn't exist
+            if (!this._actionSheet) {
+                this._actionSheet = sap.ui.xmlfragment(
+                    "quoteconvertor.quoteconvertor.view.DetailMenu",
+                    this
+                );
+                this.getView().addDependent(this._actionSheet);
+            }
+            
+            this._actionSheet.openBy(oButton);
         },
 
+
+        onCreateQuote: function () {
+            MessageToast.show("Create Quote functionality - Coming soon");
+        },
+
+        onEditQuote: function () {
+            MessageToast.show("Edit Quote functionality - Coming soon");
+        },
+
+        onAddDiscount: function () {
+            MessageToast.show("Add Discount functionality - Coming soon");
+        },
+
+        onDeleteQuote: function () {
+            MessageToast.show("Delete Quote functionality - Coming soon");
+        },
+
+
+
+        // UTIL Functions /////
         formatCurrency: function (sValue, sCurrency) {
             if (!sValue && sValue !== 0) {
                 return "";
